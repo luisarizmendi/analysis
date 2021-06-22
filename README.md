@@ -21,11 +21,3 @@ spec:
   connectionConfig:
     url: https://raw.githubusercontent.com/luisarizmendi/helm-chart-repo/master/packages
 ```
-
-## Updating submodules
-
-If you want to pull the latest commits of the microservices repositories, you can just:
-
-```
-git submodule update --remote --merge
-```
