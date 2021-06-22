@@ -2,7 +2,7 @@
 
 This is the Automated Analysis APP (for my demos in OpenShift), which is a simplified version of the [quarkuscoffeeshop APP](https://github.com/quarkuscoffeeshop).
 
-This repository just point to the microservices repos (GIT submodules), a repository with support files (ie. docker-compose for local development) and a Helm Chart to deploy it into OpenShift.
+This repository point to the microservices repos (GIT subtree), a repository with support files (ie. docker-compose for local development) and a Helm Chart to deploy it into OpenShift.
 
 Those microservices are dependant in another repository containing the "domain" files, which are included by using a GIT submodule that "mounts" the [analysis-domain](https://github.com/luisarizmendi/analysis-domain) repository in 'src/main/java/analysis/domain'
 
