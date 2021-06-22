@@ -19,5 +19,5 @@ metadata:
 spec:
   name: Luis Arizmendi Helm Charts
   connectionConfig:
-    url: https://raw.githubusercontent.com/luisarizmendi/helm-chart-repo/master/packages
+    url: https://raw.githubusercontent.com/luisarizmendi/helm-chart-repo/main/packages
 ```
