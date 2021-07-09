@@ -21,3 +21,15 @@ spec:
   connectionConfig:
     url: https://raw.githubusercontent.com/luisarizmendi/helm-chart-repo/main/packages
 ```
+
+
+## Subtrees
+
+This repository includes subtrees, if you are working and there are new commits in the subtree that you want to get, you would need to run a command like this:
+
+```
+for i in analysis-support analysis-helm analysis-domain analysis-core analysis-gateway analysis-process-regular analysis-process-virus
+do
+  git subtree pull --prefix $i https://github.com/luisarizmendi/$i main --squash
+done
+```
