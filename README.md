@@ -12,16 +12,15 @@ metadata:
 spec:
   name: Luis Arizmendi Helm Charts
   connectionConfig:
-    url: https://raw.githubusercontent.com/luisarizmendi/helm-chart-repo/master/packages
+    url: https://raw.githubusercontent.com/luisarizmendi/helm-chart-repo/main/packages
 ```
 
 ## Prerequisites
 Below are prerequisites:
-- Namespace where the APP will be deployed (ie. analysis-demo)
 - PostgreSQL Database
 - Kafka Cluster
 
-This Helm chart is able to deploy a postgres database server using the Postgres OpenShift template and the Kafka cluster by using the AMQ Streams Operator (which must be installed previously since it's not instaled by this Chart), but be aware that this option is not selected by default.
+This Helm chart is able to deploy a postgres database server using the Postgres OpenShift template and the Kafka cluster by using the AMQ Streams Operator (which must be installed previously since it's not instaled by this Chart).
 
 You can also create those backend services by your own:
 
@@ -430,17 +429,15 @@ Below is a table of each value used to configure this chart.
 
 | Value | Description | Default | Additional Information |
 | ----- | ----------- | ------- | ---------------------- |
-| `project_namespace` | Namespace where to deploy the app | analysis-demo | - |
-| `domain` | OpenShift cluster domain | ocp4.example.com | - |
 | `registry` | Registry where the container images are located | quay.io/analysis | - |
 | `kafka.cluster_name` | Name of the Kafka cluster | analysis-cluster | - |
-| `kafka.create` | Create kafka resources | false | - |
+| `kafka.create` | Create kafka resources | true | - |
 | `postgres.hostname` | Hostname of the database server | analysisdb | - |
 | `postgres.database_name` | Name of the database | analysisdb | - |
 | `postgres.schema` | Name of the Schema used | analysis | - |
 | `postgres.username` | PostgreSQL username | analysisadmin | - |
 | `postgres.password` | PostgreSQL password | analysispassword | - |
-| `postgres.create` | Create Postgres database | false | - |
+| `postgres.create` | Create Postgres database | true | - |
 
 
 ## About the APP
