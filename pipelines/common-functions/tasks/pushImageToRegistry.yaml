@@ -1,0 +1,128 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: push-image-to-registry
+spec:
+  params:
+    - default: quay.io/luisarizmendi/analysis-gateway
+      description: The registry repository in which to store the image.
+      name: registry-repository
+      type: string
+    - default: $(inputs.params.registry-image-tag-name)
+      description: The tag to use to identify the image.
+      name: registry-image-tag-name
+      type: string
+    - default: overlay
+      description: The Buildah storage STORAGE_DRIVER
+      name: STORAGE_DRIVER
+      type: string
+    - default: analysis-core
+      description: Application name
+      name: app-name
+      type: string
+  steps:
+    - command:
+        - podman
+        - pull
+        - '--tls-verify=false'
+        - >-
+          docker://image-registry.openshift-image-registry.svc:5000/analysis-cicd/$(params.app-name):$(params.registry-image-tag-name)
+      image: registry.redhat.io/rhel8/podman
+      name: podman-pull-image
+      resources: {}
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: pipeline-cache
+    - command:
+        - buildah
+        - tag
+#        - '--storage-driver=$(params.STORAGE_DRIVER)'
+        - >-
+          image-registry.openshift-image-registry.svc:5000/analysis-cicd/$(params.app-name):$(params.registry-image-tag-name)
+        - '$(params.registry-repository):$(params.registry-image-tag-name)'
+      image: registry.redhat.io/rhel8/buildah
+      name: buildah-tag-image
+      resources: {}
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: pipeline-cache
+    - command:
+        - buildah
+        - tag
+#        - '--storage-driver=$(params.STORAGE_DRIVER)'
+        - >-
+          image-registry.openshift-image-registry.svc:5000/analysis-cicd/$(params.app-name):$(params.registry-image-tag-name)
+        - '$(params.registry-repository):latest'
+      image: registry.redhat.io/rhel8/buildah
+      name: buildah-tag-image-latest
+      resources: {}
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: pipeline-cache
+    - command:
+        - buildah
+        - images
+#        - '--storage-driver=$(params.STORAGE_DRIVER)'
+      image: registry.redhat.io/rhel8/buildah
+      name: buildah-list-images-after-tagging
+      resources: {}
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: pipeline-cache
+    - command:
+        - buildah
+        - push
+#        - '--storage-driver=$(params.STORAGE_DRIVER)'
+        - '--tls-verify=false'
+        - '--authfile'
+        - /etc/secret-volume/.dockerconfigjson
+        - >-
+          $(params.registry-repository):$(params.registry-image-tag-name)
+      image: registry.redhat.io/rhel8/buildah
+      name: push-image-to-registry
+      resources: {}
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - mountPath: /etc/secret-volume
+          name: registry-auth-secret
+          readOnly: true
+        - mountPath: /var/lib/containers
+          name: pipeline-cache
+      workingDir: /registry
+    - command:
+        - buildah
+        - push
+#        - '--storage-driver=$(params.STORAGE_DRIVER)'
+        - '--tls-verify=false'
+        - '--authfile'
+        - /etc/secret-volume/.dockerconfigjson
+        - >-
+          $(params.registry-repository):latest
+      image: registry.redhat.io/rhel8/buildah
+      name: push-image-to-registry-latest
+      resources: {}
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - mountPath: /etc/secret-volume
+          name: registry-auth-secret
+          readOnly: true
+        - mountPath: /var/lib/containers
+          name: pipeline-cache
+      workingDir: /registry
+  volumes:
+    - name: registry-auth-secret
+      secret:
+        secretName: registry-auth-secret
+    - name: pipeline-cache
+      persistentVolumeClaim:
+        claimName: analysis-gateway-shared-workspace-promote
